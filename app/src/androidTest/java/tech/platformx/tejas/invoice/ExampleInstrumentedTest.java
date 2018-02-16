@@ -1,4 +1,4 @@
-package tech.platformx.tejas.rangeelodhabo;
+package tech.platformx.tejas.invoice;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,4 +1,4 @@
-package tech.platformx.tejas.rangeelodhabo;
+package tech.platformx.tejas.invoice;
 
 import org.junit.Test;
 

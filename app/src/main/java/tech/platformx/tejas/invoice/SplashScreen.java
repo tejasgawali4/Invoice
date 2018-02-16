@@ -1,17 +1,11 @@
-package tech.platformx.tejas.rangeelodhabo;
+package tech.platformx.tejas.invoice;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 /**
  * Created by Carl_johnson on 8/3/2017.

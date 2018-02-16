@@ -1,23 +1,50 @@
-package tech.platformx.tejas.rangeelodhabo;
+package tech.platformx.tejas.invoice;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
+import android.webkit.URLUtil;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
-public class MainActivity extends Activity {
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import static android.R.attr.mimeType;
+
+public class MainActivity extends AppCompatActivity {
 
     WebView webView;
+    LinearLayout linearLayout;
+    String userId,sid,postData;
+    JSONObject jsonGallery;
+    private volatile WebChromeClient mWebChromeClient;
+    private volatile DownloadListener mDownloadListener;
+    ProgressBar bar;
 
     /** Called when the activity is first created. */
     @Override
@@ -28,20 +55,65 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         webView = (WebView) findViewById(R.id.yourwebview);
+        bar = (ProgressBar) findViewById(R.id.progressBar);
+
         // force web view to open inside application
-        webView.setWebViewClient(new MyWebViewClient());
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient()
+        {
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+                Toast.makeText(getApplicationContext(),"Please Try again..",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                bar.setVisibility(View.GONE);
+            }
+        });
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.clearCache(true);
+        webView.clearHistory();
+        webView.setDownloadListener(new DownloadListener()
+        {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+
+                request.setMimeType(String.valueOf(mimeType));
+
+                String cookies = CookieManager.getInstance().getCookie(url);
+                request.addRequestHeader("cookie", cookies);
+
+                request.addRequestHeader("User-Agent", userAgent);
+                request.setDescription("Downloading file...");
+                request.setTitle(URLUtil.guessFileName(url, contentDisposition, String.valueOf(mimeType)));
+                request.allowScanningByMediaScanner();
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, String.valueOf(mimeType)));
+                DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                dm.enqueue(request);
+                Toast.makeText(getApplicationContext(), "Downloading File", Toast.LENGTH_LONG).show();
+            }
+        });
 
         checkInternetConenction();
-
     }
 
-    private void openURL()
-    {
-        webView.loadUrl("http://invoice.shivsamartha.com/");
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        this.finish();
+        return super.onOptionsItemSelected(item);
     }
+
 
     private class MyWebViewClient extends WebViewClient
     {
@@ -50,6 +122,7 @@ public class MainActivity extends Activity {
 
         public MyWebViewClient()
         {
+            linearLayout.setVisibility(View.VISIBLE);
             progressBar = (ProgressBar) findViewById(R.id.progressBar);
             progressBar.setVisibility(View.VISIBLE);
         }
@@ -66,7 +139,17 @@ public class MainActivity extends Activity {
             // TODO Auto-generated method stub
             super.onPageFinished(view, url);
             progressBar.setVisibility(View.GONE);
+            linearLayout.setVisibility(View.GONE);
         }
+    }
+
+
+    private void openURL()
+    {
+        String url = "http://invoice.shivsamartha.com/";
+        Log.d("url",""+url);
+
+        webView.loadUrl(url);
     }
 
     private boolean checkInternetConenction()
@@ -148,7 +231,7 @@ public class MainActivity extends Activity {
         else
         {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setMessage("Do You Want to Close App ?");
+            alertDialogBuilder.setMessage("Do You Want to Close Gallery ?");
 
             alertDialogBuilder.setPositiveButton("Yes",
                     new DialogInterface.OnClickListener()
