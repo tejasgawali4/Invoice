@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.setVerticalScrollBarEnabled(true);
         webView.clearCache(true);
         webView.clearHistory();
         webView.setDownloadListener(new DownloadListener()
@@ -147,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
     private void openURL()
     {
         String url = "http://invoice.shivsamartha.com/";
-        Log.d("url",""+url);
 
         webView.loadUrl(url);
     }
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         else
         {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setMessage("Do You Want to Close Gallery ?");
+            alertDialogBuilder.setMessage("Do You Want to Close ?");
 
             alertDialogBuilder.setPositiveButton("Yes",
                     new DialogInterface.OnClickListener()

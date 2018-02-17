@@ -20,4 +20,9 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <style name="AppBarTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>
