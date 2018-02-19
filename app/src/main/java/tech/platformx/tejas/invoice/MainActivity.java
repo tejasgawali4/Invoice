@@ -61,23 +61,22 @@ public class MainActivity extends AppCompatActivity {
         webView = (WebView) findViewById(R.id.yourwebview);
         bar = (ProgressBar) findViewById(R.id.progressBar);
 
-        // force web view to open inside application
-        webView.setWebChromeClient(new WebChromeClient());
-        webView.setWebViewClient(new WebViewClient()
-        {
-            @Override
-            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-                super.onReceivedHttpError(view, request, errorResponse);
-                Toast.makeText(getApplicationContext(),"Please Try again..",Toast.LENGTH_SHORT).show();
-            }
+        WebSettings settings = webView.getSettings();
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
+        settings.setJavaScriptEnabled(true);
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                bar.setVisibility(View.GONE);
-            }
-        });
+        settings.setAppCacheEnabled(false);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setDatabaseEnabled(false);
+        settings.setDomStorageEnabled(false);
+        settings.setGeolocationEnabled(false);
+        settings.setSaveFormData(false);
 
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setVerticalScrollBarEnabled(true);
         webView.clearCache(true);
@@ -105,6 +104,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // force web view to open inside application
+        webView.setWebChromeClient(new WebChromeClient()
+        {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                if (newProgress == 100)
+                {
+                    bar.setVisibility(View.GONE);
+                }
+
+            }
+        });
+
+
         checkInternetConenction();
     }
 
@@ -113,35 +127,6 @@ public class MainActivity extends AppCompatActivity {
 
         this.finish();
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private class MyWebViewClient extends WebViewClient
-    {
-
-        private ProgressBar progressBar;
-
-        public MyWebViewClient()
-        {
-            linearLayout.setVisibility(View.VISIBLE);
-            progressBar = (ProgressBar) findViewById(R.id.progressBar);
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url)
-        {
-            view.loadUrl(url);
-            return true;
-        }
-
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            // TODO Auto-generated method stub
-            super.onPageFinished(view, url);
-            progressBar.setVisibility(View.GONE);
-            linearLayout.setVisibility(View.GONE);
-        }
     }
 
 
